@@ -35,10 +35,10 @@ def main():
     dates = [317, 330] #317-323 324-330
     day = dates[0]
     while day <= dates[1]:
-        download_and_convert_files(day, day, '2018', '14')
+        download_and_convert_files(day, day, '2018', '13')
         print(day)
         day += 1
-        sleep(30)
+        sleep(10)
 
 def download_and_convert_files(jday_0, jday_f, year, band):
     for jday in range(jday_0, jday_f+1):
