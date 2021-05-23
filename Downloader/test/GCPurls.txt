@@ -1,0 +1,1 @@
+gs://gcp-public-data-goes-17/ABI-L1b-RadC/2018/318/00/OR_ABI-L1b-RadC-M*C14_G17_s201831800*.nc
