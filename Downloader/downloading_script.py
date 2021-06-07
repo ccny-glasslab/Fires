@@ -1,6 +1,6 @@
 """
-Downloads GOES-17 .nc files from the California Camp Fire and converts them into 500x500 pixel .npy files
-of California brightness temperatures, deleting the originals.
+Downloads GOES-17 .nc files from specified California fires and converts them into 500x500 pixel .npy files
+of brightness temperatures, deleting the originals.
 """
 
 # -*- coding: utf-8 -*-
@@ -34,15 +34,16 @@ shape = [target_rows, target_cols]
 
 def main():
     """
-    Downloads GOES-17 files during the California Camp Fire from GCS in batches of one day, and converts them
+    Downloads GOES-17 files during a California fire from GCS in batches of one day, and converts them
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [318, 318] #317-323 324-330
-    day = dates[0]
-#     while day <= dates[1]: CHANGE THIS
-    download_and_convert_files(day, day, '2018', '14') #change band here
-    day += 1
+    dates = [313, 316] 
+    for band in ['07', '14', '13']:
+        day = dates[0]
+        while day <= dates[1]:
+            download_and_convert_files(day, day, '2018', band)
+            day += 1
 
 def download_and_convert_files(jday_0, jday_f, year, band):
     """
@@ -62,19 +63,16 @@ def download_and_convert_files(jday_0, jday_f, year, band):
     Precondition: band is an int between 1 and 16, inclusive
     """
     for jday in range(jday_0, jday_f+1):
-#         for hour in range(24): CHANGE THIS
-        hour = 0 #CHANGE THIS
-        if hour < 10:
-            download_files(year, str(jday), '0' + str(hour), band)
-        else:
-            download_files(year, str(jday), str(hour), band)
-        p1 = Popen(['cat', 'test/GCPurls.txt'], stdout=PIPE) #../../GOES_Files/GCPurls.txt
-        p2 = Popen(['gsutil', '-m', 'cp', '-I', 'test/nc_files'], stdin=p1.stdout, stdout=PIPE) #../../GOES_Files/nc_files
+        for hour in range(24):
+            if hour < 10:
+                download_files(year, str(jday), '0' + str(hour), band)
+            else:
+                download_files(year, str(jday), str(hour), band)
+        p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
+        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout, stdout=PIPE) 
         poll = p2.poll()
         p1.stdout.close()
         p2.communicate()
-        if poll is None:
-            sleep(5)
         convert_files()
 
 def download_files(year, jday, utchr, band):
@@ -91,9 +89,9 @@ def download_files(year, jday, utchr, band):
     Parameter band: GOES band to download data from
     Precondition: band is a two-digit str between 01 and 16, inclusive
     """
-    open("test/GCPurls.txt", "w").close() #../../GOES_Files/GCPurls.txt
-    urls = open("test/GCPurls.txt", "a") #../../GOES_Files/GCPurls.txt
-    time_log = open("test/time_log.txt", "a") #../../GOES_Files/time_log.txt
+    open("../../GOES_Files/GCPurls.txt", "w").close()
+    urls = open("../../GOES_Files/GCPurls.txt", "a") 
+    time_log = open("../../GOES_Files/time_log.txt", "a") 
     prefix = 'gs://gcp-public-data-goes-17/ABI-L1b-RadC/'
     code = year + jday + utchr 
     urls.write(prefix + year + '/' + jday + '/' + utchr + '/' + 'OR_ABI-L1b-RadC-M*C' + band + '_G17_s' + code 
@@ -109,11 +107,11 @@ def convert_files():
     Converts all files in a directory of .nc files into 500x500 .npy files of California brightness temperatures, 
     and deletes the originals. If the conversion fails, the file name is written to a log.
     """
-    convert_log = open("test/convert_log.txt", "w") #../../GOES_Files/convert_log.txt
-    fail_log = open("test/fail_log.txt", "w") #../../GOES_Files/fail_log.txt
-    for file in os.listdir('test/nc_files/'): #../../GOES_Files/nc_files/
+    convert_log = open("../../GOES_Files/convert_log.txt", "w")
+    fail_log = open("../../GOES_Files/fail_log.txt", "w") 
+    for file in os.listdir('../../GOES_Files/nc_files/'): 
         try:
-            data = xr.open_dataset('test/nc_files/' + file) #../../GOES_Files/convert_log.txt
+            data = xr.open_dataset('../../GOES_Files/nc_files/' + file) 
             dat = data.metpy.parse_cf('Rad')
             geos = dat.metpy.cartopy_crs
             rad = dat.data
@@ -130,9 +128,9 @@ def convert_files():
             target_area = geometry.AreaDefinition.from_extent('CA', pc_params, shape, target_extents)
 
             result = grid.get_resampled_image(target_area, source_area, bt)
-            np.save('test/npy_files/' + file[:-3], result) #../../GOES_Files/npy_files/
+            np.save('../../GOES_Files/npy_files/' + file[:-3], result) 
             data.close()
-            os.remove('test/nc_files/' + file) #../../GOES_Files/nc_files/
+            os.remove('../../GOES_Files/nc_files/' + file) 
             convert_log.write('\n' + file)
         except:
             fail_log.write('\n' + file)
