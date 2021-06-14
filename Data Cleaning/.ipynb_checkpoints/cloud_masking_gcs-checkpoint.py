@@ -38,14 +38,13 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [300, 365] 
-    for band in ['07', '14', '13']:
-        day = dates[0]
-        while day <= dates[1]:
-            download_and_convert_files(day, day, '2018', band)
-            day += 1
+    dates = [331, 365] 
+    day = dates[0]
+    while day <= dates[1]:
+        download_and_convert_files(day, day, '2018')
+        day += 1
 
-def download_and_convert_files(jday_0, jday_f, year, band):
+def download_and_convert_files(jday_0, jday_f, year):
     """
     Downloads all the files of the given GOES band from the given start julian day 
     to the end julian day, inclusive, in the given year. 
@@ -68,9 +67,9 @@ def download_and_convert_files(jday_0, jday_f, year, band):
             jday = '0' + jday
         for hour in range(24):
             if hour < 10:
-                download_files(year, jday, '0' + str(hour), band)
+                download_files(year, jday, '0' + str(hour))
             else:
-                download_files(year, jday, str(hour), band)
+                download_files(year, jday, str(hour))
         p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
         p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout, stdout=PIPE) 
         poll = p2.poll()
@@ -78,7 +77,7 @@ def download_and_convert_files(jday_0, jday_f, year, band):
         p2.communicate()
         convert_files()
 
-def download_files(year, jday, utchr, band):
+def download_files(year, jday, utchr):
     """
     Appends links for all files in a given hour on a given day in a given year to a text file 
     for using cat ../GCPurls.txt | gsutil cp -I ./ to download.
@@ -95,13 +94,13 @@ def download_files(year, jday, utchr, band):
     open("../../GOES_Files/GCPurls.txt", "w").close()
     urls = open("../../GOES_Files/GCPurls.txt", "a") 
     time_log = open("../../GOES_Files/time_log.txt", "a") 
-    prefix = 'gs://gcp-public-data-goes-17/ABI-L1b-RadC/'
+    prefix = 'gs://gcp-public-data-goes-17/ABI-L2-ACMC/'
     code = year + jday + utchr 
-    urls.write(prefix + year + '/' + jday + '/' + utchr + '/' + 'OR_ABI-L1b-RadC-M*C' + band + '_G17_s' + code 
+    urls.write(prefix + year + '/' + jday + '/' + utchr + '/' + 'OR_ABI-L2-ACMC-M*' + '_G17_s' + code 
                + '*.nc' + '\n')
     date = datetime.datetime.strptime(year[2:] + jday, '%y%j').date()
     date = date.strftime('%m/%d/%Y')
-    time_log.write('\n' + date + ' UTC ' + utchr + ' band ' + band)
+    time_log.write('\n' + date + ' UTC ' + utchr)
     urls.close()
     time_log.close()
 
@@ -115,23 +114,16 @@ def convert_files():
     for file in os.listdir('../../GOES_Files/nc_files/'): 
         try:
             data = xr.open_dataset('../../GOES_Files/nc_files/' + file) 
-            dat = data.metpy.parse_cf('Rad')
+            dat = data.metpy.parse_cf('BCM')
             geos = dat.metpy.cartopy_crs
-            rad = dat.data
-
-            fk1 = float(data.metpy.parse_cf('planck_fk1'))
-            fk2 = float(data.metpy.parse_cf('planck_fk2'))
-            bc1 = float(data.metpy.parse_cf('planck_bc1'))
-            bc2 = float(data.metpy.parse_cf('planck_bc2'))
-            bt = (fk2/(xr.ufuncs.log(fk1/rad + 1)) - bc1)/bc2
-            bt = np.asarray(bt)
+            bcm = dat.data
 
             goes_params = geos.proj4_params
             source_area = geometry.AreaDefinition.from_cf(data)
             target_area = geometry.AreaDefinition.from_extent('CA', pc_params, shape, target_extents)
 
-            result = grid.get_resampled_image(target_area, source_area, bt)
-            np.save('../../GOES_Files/npy_files/' + file[:-3], result) 
+            result = grid.get_resampled_image(target_area, source_area, bcm)
+            np.save('../../GOES_Files/clear_sky_mask/' + file[:-3], result) 
             data.close()
             os.remove('../../GOES_Files/nc_files/' + file) 
             convert_log.write('\n' + file)

@@ -38,7 +38,7 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [313, 316] 
+    dates = [300, 365] 
     for band in ['07', '14', '13']:
         day = dates[0]
         while day <= dates[1]:
@@ -63,11 +63,14 @@ def download_and_convert_files(jday_0, jday_f, year, band):
     Precondition: band is an int between 1 and 16, inclusive
     """
     for jday in range(jday_0, jday_f+1):
+        jday = str(jday)
+        while len(jday) < 3:
+            jday = '0' + jday
         for hour in range(24):
             if hour < 10:
-                download_files(year, str(jday), '0' + str(hour), band)
+                download_files(year, jday, '0' + str(hour), band)
             else:
-                download_files(year, str(jday), str(hour), band)
+                download_files(year, jday, str(hour), band)
         p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
         p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout, stdout=PIPE) 
         poll = p2.poll()
