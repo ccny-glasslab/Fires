@@ -72,8 +72,8 @@ def download_and_convert_files(jday_0, jday_f, year, band):
             else:
                 download_files(year, jday, str(hour), band)
         p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
-        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout, stdout=PIPE) 
-        poll = p2.poll()
+        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
+        p2.poll()
         p1.stdout.close()
         p2.communicate()
         convert_files()
@@ -135,6 +135,7 @@ def convert_files():
             data.close()
             os.remove('../../GOES_Files/nc_files/' + file) 
             convert_log.write('\n' + file)
+            
         except:
             fail_log.write('\n' + file)
     convert_log.close()

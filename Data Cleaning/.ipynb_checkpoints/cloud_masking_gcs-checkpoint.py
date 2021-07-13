@@ -38,7 +38,7 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [331, 365] 
+    dates = [365, 365] 
     day = dates[0]
     while day <= dates[1]:
         download_and_convert_files(day, day, '2018')
@@ -71,8 +71,8 @@ def download_and_convert_files(jday_0, jday_f, year):
             else:
                 download_files(year, jday, str(hour))
         p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
-        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout, stdout=PIPE) 
-        poll = p2.poll()
+        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
+        p2.poll()
         p1.stdout.close()
         p2.communicate()
         convert_files()
@@ -123,6 +123,7 @@ def convert_files():
             target_area = geometry.AreaDefinition.from_extent('CA', pc_params, shape, target_extents)
 
             result = grid.get_resampled_image(target_area, source_area, bcm)
+            result = result.astype(bool)
             np.save('../../GOES_Files/clear_sky_mask/' + file[:-3], result) 
             data.close()
             os.remove('../../GOES_Files/nc_files/' + file) 
