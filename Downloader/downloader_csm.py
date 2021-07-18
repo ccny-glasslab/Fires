@@ -21,9 +21,9 @@ import subprocess
 from subprocess import Popen, PIPE
 from time import sleep
 
-# INPUT PARAMETERS HERE
-year = '2018'
-dates = [365, 365] 
+### INPUT PARAMETERS HERE ###
+year = '2020'
+dates = [248, 359] 
 
 pc = ccrs.PlateCarree()
 pc_extents = [-124.25, -114.25, 32.25, 42.25]
