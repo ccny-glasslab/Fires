@@ -1,6 +1,7 @@
-2020 248 - 2020 359 Creek Fire 
-2020 230 - 2020 276 LNU Lighting Complex Fires
-2020 229 - 2020 317 August Complex Fire
-2020 229 - 2020 275 SCU Lightning Complex Fire
+https://www.fire.ca.gov/incidents/2020/
+2020 248 - 2020 359 Creek Fire [39.8174372, -123.2111007]
+2020 230 - 2020 276 LNU Lighting Complex Fires [38.48193, -122.14864]
+2020 229 - 2020 317 August Complex Fire [39.776, -122.673] 
+2020 229 - 2020 275 SCU Lightning Complex Fire [37.439437, -121.30435]
 2018 208 - 2019 004 Mendocino Complex Fire
 2018 317 - 2018 330 Camp Fire
