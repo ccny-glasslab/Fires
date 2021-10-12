@@ -22,8 +22,8 @@ from subprocess import Popen, PIPE
 from time import sleep
 
 ### INPUT PARAMETERS HERE ###
-year = '2020'
-dates = [248, 359] 
+year = '2018'
+dates = [321, 321] 
 
 pc = ccrs.PlateCarree()
 pc_extents = [-124.25, -114.25, 32.25, 42.25]
@@ -45,8 +45,8 @@ def main():
     day = dates[0]
     while day <= dates[1]:
         download_and_convert_csm(day, day, year)
-        for band in ['07', '14', '13']:
-            download_and_convert_files(day, day, year, band)
+#         for band in ['07', '14', '13']:
+#             download_and_convert_files(day, day, year, band)
         day += 1
 
 def download_and_convert_csm(jday_0, jday_f, year):
@@ -75,12 +75,12 @@ def download_and_convert_csm(jday_0, jday_f, year):
                 download_csm(year, jday, '0' + str(hour))
             else:
                 download_csm(year, jday, str(hour))
-        p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
-        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
-        p2.poll()
-        p1.stdout.close()
-        p2.communicate()
-        convert_csm()
+            p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
+            p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
+            p2.poll()
+            p1.stdout.close()
+            p2.communicate()
+            convert_csm()
 
 def download_csm(year, jday, utchr):
     """
@@ -163,12 +163,12 @@ def download_and_convert_files(jday_0, jday_f, year, band):
                 download_files(year, jday, '0' + str(hour), band)
             else:
                 download_files(year, jday, str(hour), band)
-        p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
-        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
-        p2.poll()
-        p1.stdout.close()
-        p2.communicate()
-        convert_files()
+            p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
+            p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
+            p2.poll()
+            p1.stdout.close()
+            p2.communicate()
+            convert_files()
 
 def download_files(year, jday, utchr, band):
     """

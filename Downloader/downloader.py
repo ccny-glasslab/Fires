@@ -38,7 +38,7 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [300, 365] 
+    dates = [322, 322] 
     for band in ['07', '14', '13']:
         day = dates[0]
         while day <= dates[1]:
