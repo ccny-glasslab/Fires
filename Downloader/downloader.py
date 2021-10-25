@@ -38,7 +38,7 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [322, 322] 
+    dates = [318, 365] 
     for band in ['07', '14', '13']:
         day = dates[0]
         while day <= dates[1]:
@@ -67,16 +67,17 @@ def download_and_convert_files(jday_0, jday_f, year, band):
         while len(jday) < 3:
             jday = '0' + jday
         for hour in range(24):
+            open("../../GOES_Files/GCPurls.txt", "w").close()
             if hour < 10:
                 download_files(year, jday, '0' + str(hour), band)
             else:
                 download_files(year, jday, str(hour), band)
-        p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
-        p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
-        p2.poll()
-        p1.stdout.close()
-        p2.communicate()
-        convert_files()
+            p1 = Popen(['cat', '../../GOES_Files/GCPurls.txt'], stdout=PIPE) 
+            p2 = Popen(['gsutil', '-m', 'cp', '-I', '../../GOES_Files/nc_files'], stdin=p1.stdout) 
+            p2.poll()
+            p1.stdout.close()
+            p2.communicate()
+            convert_files()
 
 def download_files(year, jday, utchr, band):
     """
@@ -92,7 +93,7 @@ def download_files(year, jday, utchr, band):
     Parameter band: GOES band to download data from
     Precondition: band is a two-digit str between 01 and 16, inclusive
     """
-    open("../../GOES_Files/GCPurls.txt", "w").close()
+#     open("../../GOES_Files/GCPurls.txt", "w").close()
     urls = open("../../GOES_Files/GCPurls.txt", "a") 
     time_log = open("../../GOES_Files/time_log.txt", "a") 
     prefix = 'gs://gcp-public-data-goes-17/ABI-L1b-RadC/'
