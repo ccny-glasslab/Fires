@@ -38,8 +38,8 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [318, 365] 
-    for band in ['07', '14', '13']:
+    dates = [319, 319] 
+    for band in ['07', '14']:
         day = dates[0]
         while day <= dates[1]:
             download_and_convert_files(day, day, '2018', band)
@@ -77,7 +77,7 @@ def download_and_convert_files(jday_0, jday_f, year, band):
             p2.poll()
             p1.stdout.close()
             p2.communicate()
-            convert_files()
+#             convert_files()
 
 def download_files(year, jday, utchr, band):
     """

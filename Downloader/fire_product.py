@@ -38,10 +38,10 @@ def main():
     into .npy files. 
     """
     shape = [target_rows, target_cols]
-    dates = [365, 365] 
+    dates = [232, 232] 
     day = dates[0]
     while day <= dates[1]:
-        download_and_convert_files(day, day, '2018')
+        download_and_convert_files(day, day, '2020')
         day += 1
 
 def download_and_convert_files(jday_0, jday_f, year):
@@ -75,7 +75,7 @@ def download_and_convert_files(jday_0, jday_f, year):
         p2.poll()
         p1.stdout.close()
         p2.communicate()
-        convert_files()
+#         convert_files()
 
 def download_files(year, jday, utchr):
     """

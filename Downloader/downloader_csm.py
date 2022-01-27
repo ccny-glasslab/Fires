@@ -45,7 +45,7 @@ def main():
     day = dates[0]
     while day <= dates[1]:
         download_and_convert_csm(day, day, year)
-#         for band in ['07', '14', '13']:
+#         for band in ['07', '14']:
 #             download_and_convert_files(day, day, year, band)
         day += 1
 
