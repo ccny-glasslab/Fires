@@ -77,7 +77,7 @@ def download_and_convert_files(jday_0, jday_f, year, band):
             p2.poll()
             p1.stdout.close()
             p2.communicate()
-#             convert_files()
+            convert_files()
 
 def download_files(year, jday, utchr, band):
     """
@@ -93,7 +93,6 @@ def download_files(year, jday, utchr, band):
     Parameter band: GOES band to download data from
     Precondition: band is a two-digit str between 01 and 16, inclusive
     """
-#     open("../../GOES_Files/GCPurls.txt", "w").close()
     urls = open("../../GOES_Files/GCPurls.txt", "a") 
     time_log = open("../../GOES_Files/time_log.txt", "a") 
     prefix = 'gs://gcp-public-data-goes-17/ABI-L1b-RadC/'

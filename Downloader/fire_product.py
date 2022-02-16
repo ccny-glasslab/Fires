@@ -91,7 +91,6 @@ def download_files(year, jday, utchr):
     Parameter band: GOES band to download data from
     Precondition: band is a two-digit str between 01 and 16, inclusive
     """
-    open("../../GOES_Files/GCPurls.txt", "w").close()
     urls = open("../../GOES_Files/GCPurls.txt", "a") 
     time_log = open("../../GOES_Files/time_log.txt", "a") 
     prefix = 'gs://gcp-public-data-goes-17/ABI-L2-FDCC/'
