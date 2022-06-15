@@ -122,7 +122,6 @@ def convert_files():
             target_area = geometry.AreaDefinition.from_extent('CA', pc_params, shape, target_extents)
 
             result = grid.get_resampled_image(target_area, source_area, bcm)
-            result = result.astype(bool)
             np.save('../../GOES_Files/fire/' + file[:-3], result) 
             data.close()
             os.remove('../../GOES_Files/nc_files/' + file) 
