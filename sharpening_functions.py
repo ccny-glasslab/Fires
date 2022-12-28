@@ -24,6 +24,9 @@ import math
 model = hub.load("https://tfhub.dev/captain-pool/esrgan-tf2/1")
 random.seed(42)
 
+maxi = 400
+mini = 275
+
 def control_img(img):
     height, width = img.shape
     control = resize(img, (2*height, 2*width))
@@ -50,7 +53,7 @@ def load_image(array):
     return result
 
 def preprocess_image(array):
-    hr_image = array
+    hr_image = 255*((array - mini) / (maxi - mini))
     hr_size = (tf.convert_to_tensor(hr_image.shape[:-1]) // 2) * 2
     hr_image = tf.image.crop_to_bounding_box(hr_image, 0, 0, hr_size[0], hr_size[1])
     hr_image = tf.cast(hr_image, tf.float32)
@@ -76,4 +79,4 @@ def esrgan_sharpening_img(image):
     
     hr_image = tf.squeeze(hr_image).numpy()
     lr_image = tf.squeeze(lr_image).numpy()
-    return np.mean(fake_image, axis=2)
+    return (np.mean(fake_image, axis=2)/255)*(maxi - mini) + mini
