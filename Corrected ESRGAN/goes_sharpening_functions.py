@@ -29,19 +29,22 @@ mini = 275
 
 def control_sharpening_img(img):
     height, width = img.shape
-    control = resize(img, (2*height, 2*width))
+    smallimg = resize(img, (round(height/2), round(width/2)))
+    control = resize(smallimg, (height, width))
     return control
 
 def laplace_sharpening_img(img):
     height, width = img.shape
-    blurryimg = resize(img, (2*height, 2*width))
+    smallimg = resize(img, (round(height/2), round(width/2)))
+    blurryimg = resize(smallimg, (height, width))
     laplace_edges = laplace(blurryimg)
     sharpimg = blurryimg + 0.8*laplace_edges
     return sharpimg
 
 def unsharpmask_sharpening_img(img):
     height, width = img.shape
-    blurryimg = resize(img, (2*height, 2*width))
+    smallimg = resize(img, (round(height/2), round(width/2)))
+    blurryimg = resize(smallimg, (height, width))
     sharpimg = unsharp_mask(blurryimg/blurryimg.max(), radius=1, amount=1)*blurryimg.max()
     return sharpimg
 
@@ -69,4 +72,5 @@ def esrgan_sharpening_img(image):
     hr_image = preprocess_image(load_image(image))    
     fake_image = model(hr_image)
     fake_image = tf.squeeze(fake_image)
-    return (np.mean(fake_image, axis=2)/255)*(maxi - mini) + mini
+    fake_image = (np.mean(fake_image, axis=2)/255)*(maxi - mini) + mini 
+    return resize(fake_image, (image.shape[0], image.shape[1]))
